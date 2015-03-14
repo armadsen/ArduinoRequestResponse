@@ -18,6 +18,11 @@ void configurePacketizer()
 
 void loop() {
   readSerialData();
+  
+  // Toggle LED on/off if down button is pressed.
+  if (buttonIsDown()) {
+    isLEDOn() ? Esplora.writeRGB(0, 0, 0) : Esplora.writeRGB(255, 255, 255);
+  }
 }
 
 void readSerialData() 
@@ -28,6 +33,33 @@ void readSerialData()
     
     slicer.appendData((uint8_t)inputByte);
   }
+}
+
+// Debounces button
+bool buttonIsDown(void) 
+{
+  // Used for button debounce logic
+  static int buttonState;             // the current reading from the button
+  static int lastButtonState = LOW;   // the previous reading from the button
+  static long lastDebounceTime = 0;  // the last time the output pin was toggled
+  static long debounceDelay = 50;    // the debounce time; increase if the output flickers
+  
+  int newState = Esplora.readButton(SWITCH_DOWN);
+  
+  if (newState != lastButtonState) {
+    lastDebounceTime = millis(); // reset debounce timer
+  }
+  lastButtonState = newState;
+  
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    // newState is now considered valid
+    if (newState != buttonState) {
+      buttonState = newState;
+      if (buttonState == LOW) return true;
+    }
+  }
+  
+  return false;
 }
 
 void serialPacketWasReceived(byte* inputData, unsigned int inputSize)
@@ -43,6 +75,13 @@ void serialPacketWasReceived(byte* inputData, unsigned int inputSize)
   }
 }
 
+// Utilities
+
+bool isLEDOn(void)
+{
+  return (Esplora.readRed() | Esplora.readGreen() | Esplora.readBlue()) != 0;
+}
+
 // Command handlers
 
 void handleLEDCommand(byte *inputData, unsigned int inputSize)
@@ -52,7 +91,7 @@ void handleLEDCommand(byte *inputData, unsigned int inputSize)
   bool ledIsOn = false;
   switch (commandByte) {
     case '?':
-      ledIsOn = (Esplora.readRed() | Esplora.readGreen() | Esplora.readBlue()) != 0;
+      ledIsOn = isLEDOn();
       break;
     case '0':
       Esplora.writeRGB(0, 0, 0);
