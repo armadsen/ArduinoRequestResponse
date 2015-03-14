@@ -1,4 +1,4 @@
-This project is a simple Arduino sketch to be used as a companion to the [ORSSerialPort](http://www.github.com/armadsen/ORSSerialPort/) [RequestResponseDemo project](https://github.com/armadsen/ORSSerialPort/tree/master/Examples/RequestResponseDemo) for OS X.
+This project is a simple Arduino sketch to be used as a companion to the [ORSSerialPort](http://www.github.com/armadsen/ORSSerialPort/) [RequestResponseDemo project](https://github.com/armadsen/ORSSerialPort/tree/master/Examples/RequestResponseDemo) for OS X. It can currently only be run on the [Arduino Esplora](http://arduino.cc/en/Main/ArduinoBoardEsplora).
 
 The program simply listens on the Arduino's serial port at 57600 baud for incoming commands. The following command protocol is supported:
 
